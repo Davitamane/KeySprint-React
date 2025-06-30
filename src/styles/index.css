@@ -1,0 +1,25 @@
+:root {
+  --color-main: #191818;
+  --color-secondary: #f2c230;
+  --color-neutral: #f4fbfe;
+  --color-neutral-darker: #a6abad;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+body {
+  height: 100vh;
+  color: var(--color-neutral);
+  background-color: var(--color-main);
+  transition: all 0.5s;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 3rem 8rem 3rem 8rem;
+
+}
