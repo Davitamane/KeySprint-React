@@ -11,10 +11,12 @@ const gameInfo = {
 };
 const testText =
   "She used to hate the rain, but today she danced in it, spinning under the gray clouds, soaked and smiling, because after everything she had been through, she realized the storm didn't mean she was drowning - it meant she had survived, and the water no longer held power over her.";
+const testText12 =
+  "Jumping monkeys joke politely. Milk keeps pouring nonstop. Opinion holds joy. Julia hums kindly. Look, neon lamps shine. Plump muffins make mouths open. Uphold noble hopes. Jolly kids pick pumpkins. Hello, moonlight! Kilometers jump hourly.";
 function App() {
   const [mode, setMode] = useState("normal");
   const [typedText, setTypedText] = useState([]);
-  const [currentSentence, setCurrentSentence] = useState(testText);
+  const [currentSentence, setCurrentSentence] = useState(testText12);
   const [gameOn, setGameOn] = useState(false);
 
   useEffect(() => {
@@ -38,10 +40,9 @@ function App() {
       window.removeEventListener("keydown", handleKeyDown);
     };
   }, [typedText, currentSentence]);
-
   return (
     <>
-      <Header setMode={setMode} mode={mode} gameOn={gameOn}/>
+      <Header setMode={setMode} mode={mode} gameOn={gameOn} />
       {mode === "normal" ? (
         <NormalMode
           currentSentence={currentSentence}
@@ -60,9 +61,9 @@ function NormalMode({ currentSentence, typedText, gameOn, setGameOn }) {
 
   return (
     <div className="game-container">
-      <Settings setWords={setWords} words={words} />
+      <Settings setWords={setWords} words={words} gameOn={gameOn} />
       <div className="text-container">
-        <Info children={gameInfo.normal} />
+        <Info children={gameInfo.normal} gameOn={gameOn} />
         <Text
           text={currentSentence}
           typedText={typedText}
@@ -76,25 +77,30 @@ function NormalMode({ currentSentence, typedText, gameOn, setGameOn }) {
     </div>
   );
 }
-function Settings({ setWords, words }) {
+function Settings({ setWords, words, gameOn }) {
   return (
     <div className="settings-container">
-      <button className="btn-smaller">Punctuation</button>
+      <button className="btn-smaller" disabled={gameOn}>
+        Punctuation
+      </button>
       <button
         className={`btn-smaller ${words === 10 ? "btn-smaller-active" : ""}`}
         onClick={() => setWords(10)}
+        disabled={gameOn}
       >
         10 words
       </button>
       <button
         className={`btn-smaller ${words === 25 ? "btn-smaller-active" : ""}`}
         onClick={() => setWords(25)}
+        disabled={gameOn}
       >
         25 words
       </button>
       <button
         className={`btn-smaller ${words === 50 ? "btn-smaller-active" : ""}`}
         onClick={() => setWords(50)}
+        disabled={gameOn}
       >
         50 words
       </button>
@@ -133,9 +139,9 @@ function Text({ text, typedText, setGameOn }) {
   );
 }
 
-function Info({ children }) {
+function Info({ children, gameOn }) {
   return (
-    <div className="info">
+    <div className={`info ${gameOn ? "grayColor" : ""}`}>
       <h1>Basic info:</h1>
       <h4>{children}</h4>
     </div>
