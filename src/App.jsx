@@ -1,6 +1,6 @@
 import "./styles/App.css";
 import Header from "./Components/Header";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import reload from "./images/reload.svg";
 
 const gameInfo = {
@@ -10,18 +10,52 @@ const gameInfo = {
     "In the Sprint mode, a storm slowly approaches as you type, creating intense pressure to surpass your high score. Type swiftly and accurately to stay in the clear and escape the storm!",
 };
 const testText =
-  "She used to hate the rain, but today she danced in it, spinning under the gray clouds, soaked and smiling, because after everything she had been through, she realized the storm didn’t mean she was drowning—it meant she had survived, and the water no longer held power over her.";
-
+  "She used to hate the rain, but today she danced in it, spinning under the gray clouds, soaked and smiling, because after everything she had been through, she realized the storm didn't mean she was drowning - it meant she had survived, and the water no longer held power over her.";
 function App() {
   const [mode, setMode] = useState("normal");
+  const [typedText, setTypedText] = useState([]);
+  const [currentSentence, setCurrentSentence] = useState(testText);
+  const [gameOn, setGameOn] = useState(false);
+
+  useEffect(() => {
+    function handleKeyDown(e) {
+      // const nextLetter = currentSentence[typedText.length];
+      if (e.key !== currentSentence[0] && typedText.length === 0) return;
+
+      if (e.key === "Backspace") {
+        setTypedText((typedText) => typedText.slice(0, -1));
+        // console.log(nextLetter);
+        return;
+      } else {
+        if (e.key.length > 1) return;
+        setTypedText((typedText) => [...typedText, e.key]);
+        // console.log(nextLetter);
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [typedText, currentSentence]);
+
   return (
     <>
-      <Header setMode={setMode} mode={mode} />
-      {mode === "normal" ? <NormalMode /> : <SprintMode />}
+      <Header setMode={setMode} mode={mode} gameOn={gameOn}/>
+      {mode === "normal" ? (
+        <NormalMode
+          currentSentence={currentSentence}
+          typedText={typedText}
+          setGameOn={setGameOn}
+          gameOn={gameOn}
+        />
+      ) : (
+        <SprintMode />
+      )}
     </>
   );
 }
-function NormalMode() {
+function NormalMode({ currentSentence, typedText, gameOn, setGameOn }) {
   const [words, setWords] = useState(10);
 
   return (
@@ -29,7 +63,11 @@ function NormalMode() {
       <Settings setWords={setWords} words={words} />
       <div className="text-container">
         <Info children={gameInfo.normal} />
-        <Text children={testText} />
+        <Text
+          text={currentSentence}
+          typedText={typedText}
+          setGameOn={setGameOn}
+        />
       </div>
       <button className="btn-smaller reload">
         <img src={reload} alt="reload" />
@@ -63,9 +101,38 @@ function Settings({ setWords, words }) {
     </div>
   );
 }
-function Text({ children }) {
-  return <p className="game-text">{children}</p>;
+function Text({ text, typedText, setGameOn }) {
+  let foundError = false;
+  useEffect(() => {
+    if (typedText.length === 1 && typedText[0] === text[0]) {
+      setGameOn(true);
+    }
+  }, [typedText, text, setGameOn]);
+
+  return (
+    <p className="game-text">
+      {text.split("").map((letter, i) => {
+        let className = "";
+
+        if (i < typedText.length) {
+          if (foundError || typedText[i] !== letter) {
+            className = "wrong";
+            foundError = true;
+          } else {
+            className = "correct";
+          }
+        }
+
+        return (
+          <span key={i} className={`game-text ${className}`}>
+            {letter}
+          </span>
+        );
+      })}
+    </p>
+  );
 }
+
 function Info({ children }) {
   return (
     <div className="info">
