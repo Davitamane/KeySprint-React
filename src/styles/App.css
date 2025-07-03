@@ -135,3 +135,17 @@ button:disabled,
 button[disabled] {
   color: #585a5b !important;
 }
+.game-info {
+  border: none;
+  background: none;
+  font: inherit;
+  font-size: 1.2rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: #f4fbfe;
+  transition: all 0.5s;
+  max-width: fit-content;
+}
+.yello{
+  color: var(--color-secondary);
+}

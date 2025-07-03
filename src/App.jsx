@@ -11,31 +11,54 @@ const gameInfo = {
 };
 const testText =
   "She used to hate the rain, but today she danced in it, spinning under the gray clouds, soaked and smiling, because after everything she had been through, she realized the storm didn't mean she was drowning - it meant she had survived, and the water no longer held power over her.";
-const testText12 =
-  "Jumping monkeys joke politely. Milk keeps pouring nonstop. Opinion holds joy. Julia hums kindly. Look, neon lamps shine. Plump muffins make mouths open. Uphold noble hopes. Jolly kids pick pumpkins. Hello, moonlight! Kilometers jump hourly.";
+// const testText2 =
+// "Jumping monkeys joke politely. Milk keeps pouring nonstop. Opinion holds joy. Julia hums kindly. Look, neon lamps shine. Plump muffins make mouths open. Uphold noble hopes. Jolly kids pick pumpkins. Hello, moonlight! Kilometers jump hourly.";
+const testText2 = "test test";
 function App() {
   const [mode, setMode] = useState("normal");
   const [typedText, setTypedText] = useState([]);
-  const [currentSentence, setCurrentSentence] = useState(testText12);
+  const [currentSentence, setCurrentSentence] = useState(testText2);
   const [gameOn, setGameOn] = useState(false);
+  const [finished, setFinished] = useState(false);
+  const [time, setTime] = useState(0);
+
+  function handleRegenerate() {
+    setTypedText([]);
+    setCurrentSentence(testText);
+    setFinished(false);
+    setTime(0);
+  }
+  useEffect(() => {
+    if (!gameOn) return;
+
+    const timer = setInterval(() => {
+      setTime((time) => time + 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [gameOn]);
 
   useEffect(() => {
     function handleKeyDown(e) {
-      // const nextLetter = currentSentence[typedText.length];
       if (e.key !== currentSentence[0] && typedText.length === 0) return;
 
       if (e.key === "Backspace") {
         setTypedText((typedText) => typedText.slice(0, -1));
-        // console.log(nextLetter);
         return;
       } else {
         if (e.key.length > 1) return;
+
         setTypedText((typedText) => [...typedText, e.key]);
-        // console.log(nextLetter);
+        if (typedText.length + 1 === currentSentence.length) {
+          console.log("HALOO");
+          setFinished(true);
+          setGameOn(false);
+        }
+        console.log(typedText.length);
+        console.log(currentSentence.length);
       }
     }
     window.addEventListener("keydown", handleKeyDown);
-
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
     };
@@ -49,6 +72,9 @@ function App() {
           typedText={typedText}
           setGameOn={setGameOn}
           gameOn={gameOn}
+          handleRegenerate={handleRegenerate}
+          time={time}
+          finished={finished}
         />
       ) : (
         <SprintMode />
@@ -56,12 +82,44 @@ function App() {
     </>
   );
 }
-function NormalMode({ currentSentence, typedText, gameOn, setGameOn }) {
+function NormalMode({
+  currentSentence,
+  typedText,
+  gameOn,
+  setGameOn,
+  handleRegenerate,
+  time,
+  finished,
+}) {
   const [words, setWords] = useState(10);
 
+  if (!gameOn && finished) {
+    return (
+      <div className="game-container">
+        <h1>WOO LESGOO</h1>
+        <div className="game-info">
+          Time: <span className="yello">{time}s</span>
+        </div>
+        <div className="game-info">
+          Letters: <span className="yello">43/50</span>
+        </div>
+        <button className="btn-smaller reload" onClick={handleRegenerate}>
+          <img src={reload} alt="reload" />
+          Regenerate
+        </button>
+      </div>
+    );
+  }
   return (
     <div className="game-container">
-      <Settings setWords={setWords} words={words} gameOn={gameOn} />
+      <Settings
+        setWords={setWords}
+        words={words}
+        gameOn={gameOn}
+        time={time}
+        typedText={typedText}
+        currentSentence={currentSentence}
+      />
       <div className="text-container">
         <Info children={gameInfo.normal} gameOn={gameOn} />
         <Text
@@ -70,40 +128,69 @@ function NormalMode({ currentSentence, typedText, gameOn, setGameOn }) {
           setGameOn={setGameOn}
         />
       </div>
-      <button className="btn-smaller reload">
+      <button className="btn-smaller reload" onClick={handleRegenerate}>
         <img src={reload} alt="reload" />
         Regenerate
       </button>
     </div>
   );
 }
-function Settings({ setWords, words, gameOn }) {
+function Settings({
+  setWords,
+  words,
+  gameOn,
+  time,
+  typedText,
+  currentSentence,
+}) {
   return (
     <div className="settings-container">
-      <button className="btn-smaller" disabled={gameOn}>
-        Punctuation
-      </button>
-      <button
-        className={`btn-smaller ${words === 10 ? "btn-smaller-active" : ""}`}
-        onClick={() => setWords(10)}
-        disabled={gameOn}
-      >
-        10 words
-      </button>
-      <button
-        className={`btn-smaller ${words === 25 ? "btn-smaller-active" : ""}`}
-        onClick={() => setWords(25)}
-        disabled={gameOn}
-      >
-        25 words
-      </button>
-      <button
-        className={`btn-smaller ${words === 50 ? "btn-smaller-active" : ""}`}
-        onClick={() => setWords(50)}
-        disabled={gameOn}
-      >
-        50 words
-      </button>
+      {gameOn ? (
+        <>
+          <div className="game-info">
+            Time: <span className="yello">{time}s</span>
+          </div>
+          <div className="game-info">
+            Letters:{" "}
+            <span className="yello">
+              {typedText.length}/{currentSentence.length}
+            </span>
+          </div>
+        </>
+      ) : (
+        <>
+          <button className="btn-smaller" disabled={gameOn}>
+            Punctuation
+          </button>
+          <button
+            className={`btn-smaller ${
+              words === 10 ? "btn-smaller-active" : ""
+            }`}
+            onClick={() => setWords(10)}
+            disabled={gameOn}
+          >
+            10 words
+          </button>
+          <button
+            className={`btn-smaller ${
+              words === 25 ? "btn-smaller-active" : ""
+            }`}
+            onClick={() => setWords(25)}
+            disabled={gameOn}
+          >
+            25 words
+          </button>
+          <button
+            className={`btn-smaller ${
+              words === 50 ? "btn-smaller-active" : ""
+            }`}
+            onClick={() => setWords(50)}
+            disabled={gameOn}
+          >
+            50 words
+          </button>
+        </>
+      )}
     </div>
   );
 }
@@ -148,6 +235,8 @@ function Info({ children, gameOn }) {
   );
 }
 function SprintMode() {
-  return <div className="game-container">Settings</div>;
+  return (
+    <div className="game-container">Work in progress...(i aint doing shit)</div>
+  );
 }
 export default App;
