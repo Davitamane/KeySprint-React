@@ -14,16 +14,17 @@ export default function Header({ mode, setMode, gameOn }) {
             Sprint mode
           </Button>
         </div>
-        <Button
-          className={gameOn ? "hidden" : "visible"}
-          onClick={() =>
-            window.open(
-              "https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ"
-            )
-          }
-        >
-          About us
-        </Button>
+        <div className={gameOn ? "hidden" : "visible"}>
+          <Button
+            onClick={() =>
+              window.open(
+                "https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ"
+              )
+            }
+          >
+            About us
+          </Button>
+        </div>
       </>
     </header>
   );
@@ -32,7 +33,7 @@ function Button({ children, onClick, active = false, className }) {
   return (
     <button
       onClick={onClick}
-      className={`btn ${className} ${active ? "btn-active" : ""}`}
+      className={`btn ${className}  ${active ? "btn-active" : ""}`}
     >
       {children}
     </button>

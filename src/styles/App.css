@@ -149,3 +149,7 @@ button[disabled] {
 .yello{
   color: var(--color-secondary);
 }
+.finished{
+  padding-top: 5rem;
+  gap: 3rem;
+}

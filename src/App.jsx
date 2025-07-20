@@ -50,12 +50,21 @@ function App() {
 
         setTypedText((typedText) => [...typedText, e.key]);
         if (typedText.length + 1 === currentSentence.length) {
-          console.log("HALOO");
+          const completedText = [...typedText, e.key].join("");
+          const isCorrect = completedText === currentSentence;
+
+          if (isCorrect) {
+            console.log("No mistakes!");
+          } else {
+            console.log("There were mistakes.");
+          }
+
           setFinished(true);
           setGameOn(false);
         }
-        console.log(typedText.length);
-        console.log(currentSentence.length);
+
+        // console.log(typedText.length);
+        // console.log(currentSentence.length);
       }
     }
     window.addEventListener("keydown", handleKeyDown);
@@ -95,17 +104,22 @@ function NormalMode({
 
   if (!gameOn && finished) {
     return (
-      <div className="game-container">
-        <h1>WOO LESGOO</h1>
-        <div className="game-info">
-          Time: <span className="yello">{time}s</span>
-        </div>
-        <div className="game-info">
-          Letters: <span className="yello">43/50</span>
+      <div className="game-container finished">
+        <h2>Congratulations! blah blah blah idk what to say here</h2>
+        <div className="settings-container">
+          <div className="game-info">
+            Time: <span className="yello">{time}s</span>
+          </div>
+          <div className="game-info">
+            Mistakes: <span className="yello">4</span>
+          </div>
+          <div className="game-info">
+            WPM: <span className="yello">72</span>
+          </div>
         </div>
         <button className="btn-smaller reload" onClick={handleRegenerate}>
           <img src={reload} alt="reload" />
-          Regenerate
+          Try again
         </button>
       </div>
     );
@@ -194,6 +208,7 @@ function Settings({
     </div>
   );
 }
+
 function Text({ text, typedText, setGameOn }) {
   let foundError = false;
   useEffect(() => {
@@ -215,7 +230,6 @@ function Text({ text, typedText, setGameOn }) {
             className = "correct";
           }
         }
-
         return (
           <span key={i} className={`game-text ${className}`}>
             {letter}
