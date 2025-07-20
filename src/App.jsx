@@ -250,7 +250,12 @@ function Info({ children, gameOn }) {
 }
 function SprintMode() {
   return (
-    <div className="game-container">Work in progress...(i aint doing shit)</div>
+    <>
+      <div className="game-container">
+        Work in progress...(i aint doing shit)
+      </div>
+      <div>test</div>
+    </>
   );
 }
 export default App;
